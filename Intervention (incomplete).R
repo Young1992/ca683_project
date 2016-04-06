@@ -36,7 +36,7 @@ test_1 <- merge(oil_wti_00, gdelt_00)
 #test_1$Event[test_1$Event != 0] <- 1
 
 #Here some of the oil data is missing, I use its mean to replace it.
-test_1$Oil.WTI.Daily[is.na(test_1$Oil.WTI.Daily)] <- mean(test_1$Oil.WTI.Daily, na.rm = TRUE)
+#test_1$Oil.WTI.Daily[is.na(test_1$Oil.WTI.Daily)] <- mean(test_1$Oil.WTI.Daily, na.rm = TRUE)
 #Here you can have a quick visible comparsion between the oil price and the times of event.
 plot.zoo(test_1)
 
