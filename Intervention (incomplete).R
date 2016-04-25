@@ -12,7 +12,7 @@ library(xts)
 setwd('/Users/xuanyang/Documents/CA683 Data Analytics and Data Mining/ca683_project/data')
 
 #####################Part 1 Data Preparation##############
-#Download the processed datasets by us at: 
+#Download the processed datasets at: 
 #https://github.com/magrossi/ca683_project/tree/master/data
 ##########################################################
 
@@ -42,8 +42,8 @@ plot.zoo(test_1)
 
 ###########################################################
 #From the chat test_1 above, the huge change of the oil price 
-#seems happened before 2010, while the events (GDELT code 20)
-#most happened after 2010. In this case, there has a doubt of 
+#seems happened around 2008, while the events (GDELT code 20)
+#most happened after 2008. In this case, there has a doubt of 
 #whether the oil price has a connection with the event times.
 ######################End of Part 1#########################
 
@@ -57,12 +57,12 @@ plot.zoo(test_1)
 oil_ts = ts(test_1$Oil.WTI.Daily, start = 2000, frequency = 300)
 plot.ts(oil_ts)
 
-#From Part 1's result, the events mostly happened around 2013,
-#so set 2013 as the time classifier of the intervention indicator (0 or 1),
+#From Part 1's result, the huge change or oil price happened around 2008,
+#so set 2008 as the time classifier of the intervention indicator (0 or 1),
 #and create lists for each indicator.
-ind=rep(0,length(oil_ts[time(oil_ts)<2013])) 
+ind=rep(0,length(oil_ts[time(oil_ts)<2008])) 
 length(ind) 
-ind1=rep(1,length(oil_ts[time(oil_ts)>=2013])) 
+ind1=rep(1,length(oil_ts[time(oil_ts)>=2008])) 
 length(ind1)
 #Create a new set contains indicators.
 indd=c(ind,ind1)
@@ -85,7 +85,7 @@ mod.2
 #0.9988    63.7473  0.7517  0.9132
 #s.e.  0.0007    16.3103  0.3398  1.1270
 y.diff <- diff(test_1$Oil.WTI.Daily)
-y.pred <- 0.9132*indd + 0.9132*(0.7517^(time(oil_ts)<2013))*as.numeric(time(oil_ts)>=2013)
+y.pred <- 0.9132*indd + 0.9132*(0.7517^(time(oil_ts)<2008))*as.numeric(time(oil_ts)>=2013)
 plot(y=y.diff, x=time(oil_ts),type='l')
 y.pred <- y.pred[-1]
 lines(y=y.pred, x=time(oil_ts)[-1], lty=2)
