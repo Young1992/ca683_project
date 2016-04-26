@@ -19,10 +19,6 @@ require("MASS")
 require("Matrix")
 require("lme4")
 
-#For Mac, set the data path
-setwd('/Users/xuanyang/Documents/CA683 Data Analytics and Data Mining/ca683_project/data')
-
-
 ##load the data
 # GDELT Event Counts
 gdelt <- readRDS("gdelt_indicators.rds")
@@ -42,10 +38,7 @@ names(gdelt_simple) <- c("EventHappened")
 oil_gdelt <- merge(gdelt_simple, oil_and_derivates_diff)
 oil_gdelt[is.na(oil_gdelt[,1]),1] <- 0
 
-##times series model
-plot.zoo(oil_gdelt, col=1:ncol(oil_gdelt), main="Differenciated Oil & Derivates\nGDELT Event Days", las=1)
-
-##mixed effect model
+##my model
 head(oil_gdelt)
 oil.dta <- na.omit(oil_gdelt)
 cor(oil.dta[ , 1:13])
@@ -63,6 +56,11 @@ glm1<- glm(EventHappened ~ Oil.Canada.Monthly +
                     Gasoline.US.Gulf.Coast.Daily:Kerosene.Jet.Fuel.Daily,
                     family="binomial", data=oil.dta)
 summary(glm1)
+prob=predict(glm1,type=c("response"))
+oil.dta$prob=prob
+library(pROC)
+g <- roc(EventHappened ~ prob, data = oil.dta)
+plot(g) 
 
 ##Through the model we selected, we are able to pick out the most impactable factors. Acoording to the model
 ## oil.Canada.Monthly increase one unit, the log odds of event happen will decrease by 0.66,
@@ -78,11 +76,13 @@ plot(glm1)
 ##From the picture, we can see our model fits very well.
 
 ##Based on the previous model. we want to see if the other factors are also included in the model.
+library(Matrix)
+library(lme4)
 model.mix <- glmer(oil.dta$EventHappened ~ oil.dta$Oil.Canada.Monthly + (1|oil.dta$Oil.OPEC.Daily),family = binomial)
 summary(model.mix) 
 ##Based on previous results, now we build a generalized logistic regression with random effect. We build
-##such a model because we know exactly that event are affected by oil price in Canada. However, when there
-## has special events happened in OPEC, it may also affect the results.From the correlation, we can view this as 
+##such a model because we knwo exactly that event are affected by oil price in Canada. However, whem there
+## are special event happened in OPEC, it may also affect the results.From the correlation, we can view this as 
 ## an very important one.
 
 
